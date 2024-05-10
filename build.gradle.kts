@@ -63,7 +63,7 @@ configurations.all {
 }
 
 tasks.compileJava.configure {
-    options.release.set(8)
+    options.release.set(17)
 }
 
 version = "2.9.10-SNAPSHOT-02"

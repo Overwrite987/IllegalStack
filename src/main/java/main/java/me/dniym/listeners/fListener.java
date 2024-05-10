@@ -168,7 +168,7 @@ public class fListener implements Listener {
     private Boolean is112 = false;
     private Boolean is110 = false;
     private HashMap<UUID, Location> teleGlitch = new HashMap<>();
-    
+
     public fListener(IllegalStack plugin) {
         this.plugin = plugin;
         fListener.setInstance(this);
@@ -297,7 +297,8 @@ public class fListener implements Listener {
             }
         }
 
-        if (!ver.contains("v1_14") && !ver.contains("v1_15") && !ver.contains("v1_16") && !ver.contains("v1_17") && !ver.contains("v1_18") && !ver.contains("V1_19") && !ver.contains("v1_20")) {
+        if (!ver.contains("v1_14") && !ver.contains("v1_15") && !ver.contains("v1_16") && !ver.contains("v1_17") && !ver.contains(
+                "v1_18") && !ver.contains("V1_19") && !ver.contains("v1_20")) {
             if (ver.contains("v1_13")) {
                 LOGGER.info("MC Version 1.13+ detected!");
 
@@ -443,7 +444,7 @@ public class fListener implements Listener {
         boolean cancel = false;
 
         if (Protections.RemoveItemTypes.isEnabled() && RemoveItemTypesCheck.shouldRemove(e.getBlockPlaced().getType())) {
-        	
+
             Scheduler.runTaskLater(this.plugin, () -> {
                 fListener.getLog().append(Msg.ItemTypeRemovedPlayerOnPlace.getValue(
                         e.getPlayer(),
@@ -564,13 +565,15 @@ public class fListener implements Listener {
     /*
      * Looks for bad signs, tripwire dupe, players on top of the nether etc
      */
-    @EventHandler (ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true)
     public void onSignPlace(BlockPlaceEvent e) {  //only affects versions 1.9 through 1.12
         if (Protections.PreventTripwireDupe.isEnabled(e.getBlock().getWorld())) {
             if (e.getBlock().getType() == Material.TRIPWIRE_HOOK) {
                 for (BlockFace face : BlockFace.values()) {
-                	
-                    if ((Tag.TRAPDOORS.getValues().contains(e.getBlock().getRelative(face).getType()) || Tag.DOORS.getValues().contains(e.getBlock().getRelative(face).getType()))
+
+                    if ((Tag.TRAPDOORS.getValues().contains(e.getBlock().getRelative(face).getType()) || Tag.DOORS
+                            .getValues()
+                            .contains(e.getBlock().getRelative(face).getType()))
                             && IllegalStackAction.isCompleted(
                             Protections.PreventTripwireDupe,
                             e.getPlayer(),
@@ -633,13 +636,13 @@ public class fListener implements Listener {
         if (e.getMount() instanceof Player) {
             return;
         }
-        if(Protections.PreventVexTrapping.isEnabled(e.getEntity().getLocation())) {
-        	if(e.getEntity() instanceof Vex) {
-                Vex v = ((Vex)e.getEntity());
+        if (Protections.PreventVexTrapping.isEnabled(e.getEntity().getLocation())) {
+            if (e.getEntity() instanceof Vex) {
+                Vex v = ((Vex) e.getEntity());
                 v.eject();
-        		v.getCollidableExemptions().add(e.getMount().getUniqueId());
-        		e.setCancelled(true);
-        	}
+                v.getCollidableExemptions().add(e.getMount().getUniqueId());
+                e.setCancelled(true);
+            }
         }
 
         if (Protections.PreventHeadInsideBlock.isEnabled() && e.getEntity() instanceof Player) {
@@ -804,7 +807,12 @@ public class fListener implements Listener {
                     for (ItemStack itemStack : c.getInventory()) {
                         if (itemStack != null && itemStack.getType() == e.getItem().getType()) {
 
-                            Scheduler.runTaskLater(this.plugin, () -> e.getBlock().breakNaturally(), 4, e.getBlock().getLocation());
+                            Scheduler.runTaskLater(
+                                    this.plugin,
+                                    () -> e.getBlock().breakNaturally(),
+                                    4,
+                                    e.getBlock().getLocation()
+                            );
 
 
                         }
@@ -1285,7 +1293,7 @@ public class fListener implements Listener {
                         }
                     }
 
-                    
+
                     if (Protections.RemoveBooksNotMatchingCharset.isEnabled() && is != null && is.hasItemMeta() && is.getItemMeta() instanceof BookMeta) {
 
                         BookMeta bm = (BookMeta) is.getItemMeta();
@@ -1814,14 +1822,13 @@ public class fListener implements Listener {
     }
 
 
-    
     @EventHandler(priority = EventPriority.LOWEST)
     public void creatureSpawnEvent(CreatureSpawnEvent e) {
 
         if (Protections.DisableInWorlds.isWhitelisted(e.getLocation().getWorld().getName())) {
             return;
         }
-    	
+
         if (Protections.PreventZombieItemPickup.isEnabled()) {
             if (e.getEntity() instanceof Zombie) {
                 Zombie z = (Zombie) e.getEntity();
@@ -2517,7 +2524,8 @@ public class fListener implements Listener {
     public void onCreativeSet(InventoryCreativeEvent e) {
 
         if (Protections.RemoveCustomAttributes.isEnabled() || Protections.BlockBadItemsFromCreativeTab.isEnabled()) {
-            if (e.getCursor() != null && e.getCursor().getType() != Material.AIR) {
+
+            if (e.getCursor().getType() != Material.AIR) {
 
                 if (Protections.RemoveOverstackedItems.isEnabled())//I think all checks probably need to be moved to their own classes
                 {
@@ -2555,15 +2563,16 @@ public class fListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        if (SpigotMethods.isNPC(e.getPlayer())) {
+
+        Player p = e.getPlayer();
+        if (SpigotMethods.isNPC(p)) {
             return;
         }
-        if (Protections.DisableInWorlds.isWhitelisted(e.getPlayer().getWorld().getName())) {
+        if (Protections.DisableInWorlds.isWhitelisted(p.getWorld().getName())) {
             return;
         }
 
         if (Protections.PreventPortalTraps.isEnabled()) {
-            Player p = e.getPlayer();
 
             Block exit = p.getLocation().getBlock();
             if (exit.getType() == fListener.getPortal()) {
@@ -2599,7 +2608,7 @@ public class fListener implements Listener {
         }
 
         if (IllegalStack.isNbtAPI() && Protections.CheckGroundForBadShulkerAtLogin.isEnabled()) {
-            for (Entity ent : e.getPlayer().getLocation().getChunk().getEntities()) {
+            for (Entity ent : p.getLocation().getChunk().getEntities()) {
                 if (ent instanceof Item) {
                     Item itm = (Item) ent;
                     if (itm.getItemStack().getType().name().contains("SHULKER_BOX")) {
@@ -2618,7 +2627,6 @@ public class fListener implements Listener {
             if (is == null) {
                 continue;
             }
-            Player p = e.getPlayer();
             if (Protections.RemoveAllRenamedItems.isEnabled()) {
                 if (!p.hasPermission("IllegalStack.RenameBypass")) {
                     if (is != null && is.hasItemMeta() && is.getItemMeta().hasDisplayName()) {
@@ -2688,10 +2696,9 @@ public class fListener implements Listener {
                 if (is == null || is.getEnchantments().isEmpty()) {
                     continue;
                 }
-                if (!Protections.OnlyFunctionInWorlds.getTxtSet().isEmpty()) //world list isn't empty
-                {
-                    if (!Protections.OnlyFunctionInWorlds.getTxtSet().contains(p.getWorld().getName())) //isn't in a checked world
-                    {
+                if (!Protections.OnlyFunctionInWorlds.getTxtSet().isEmpty()) { //world list isn't empty
+                    if (!Protections.OnlyFunctionInWorlds.getTxtSet().contains(p.getWorld().getName())) { //isn't in a checked
+                        // world
                         continue;
                     }
                 }
@@ -3280,15 +3287,20 @@ public class fListener implements Listener {
 
     @EventHandler
     public void onStringShear(BlockFromToEvent e) {
-        if (Protections.DisableInWorlds.isWhitelisted(e.getBlock().getWorld().getName()) || !Protections.PreventStringDupe.isEnabled()) {
+        if (Protections.DisableInWorlds.isWhitelisted(e
+                .getBlock()
+                .getWorld()
+                .getName()) || !Protections.PreventStringDupe.isEnabled()) {
             return;
         }
-        
-        if(e.getToBlock().getType() == Material.TRIPWIRE)
-        {
-        	e.setCancelled(true);
-        	e.getToBlock().setType(Material.AIR);
-        	fListener.getLog().append(Msg.BlockedStringDupe.getValue(e.getBlock().getLocation(), ""), Protections.PreventStringDupe);
+
+        if (e.getToBlock().getType() == Material.TRIPWIRE) {
+            e.setCancelled(true);
+            e.getToBlock().setType(Material.AIR);
+            fListener.getLog().append(
+                    Msg.BlockedStringDupe.getValue(e.getBlock().getLocation(), ""),
+                    Protections.PreventStringDupe
+            );
         }
     }
 
@@ -3622,77 +3634,72 @@ public class fListener implements Listener {
 
     @EventHandler
     public void NetherCeilingMovementCheck(PlayerMoveEvent e) {
-    	
-        if (e.getFrom().getBlockX() != e.getTo().getBlockX() || 
-        		e.getFrom().getBlockY() != e.getTo().getBlockY() || 
-        		e.getFrom().getBlockZ() != e.getTo().getBlockZ()) {
-        	
-        
-                if(e.getPlayer().isOp()) 
-                	return;
-               
-                
-               
-            if (Protections.KillPlayersBelowNether.isEnabled() &&
-                    (e.getPlayer().isFlying() || (IllegalStack.hasElytra() && e.getPlayer().isGliding()))) {
 
-                if (Protections.ExcludeNetherWorldFromHeightCheck.getTxtSet().contains(e.getTo().getWorld().getName())) {
+        Location from = e.getFrom();
+        Location to = e.getTo();
+        if (from.getBlockX() == to.getBlockX() ||
+                from.getBlockY() == to.getBlockY() ||
+                from.getBlockZ() == to.getBlockZ()) {
+            return;
+        }
+
+        Player p = e.getPlayer();
+
+        if (p.isOp()) {
+            return;
+        }
+
+        if (Protections.KillPlayersBelowNether.isEnabled() &&
+                (p.isFlying() || (IllegalStack.hasElytra() && p.isGliding()))) {
+
+            if (Protections.ExcludeNetherWorldFromHeightCheck.getTxtSet().contains(e.getTo().getWorld().getName())) {
+                return;
+            }
+            if (to.getY() < 0) {
+                if (to.getWorld().getEnvironment() == Environment.NETHER) { //already on top of the nether..
+                    p.setFlying(false);
+
+                    if (IllegalStack.hasElytra()) {
+                        p.setGliding(false);
+                    }
+
+                    if (p.getGameMode() != GameMode.SURVIVAL) {
+                        p.setGameMode(GameMode.SURVIVAL);
+                    }
+
+                    if (p.isInvulnerable()) {
+                        p.setInvulnerable(false);
+                    }
+
+                    e.setCancelled(true);
+                    getLog().append2(Msg.StaffMsgUnderNether.getValue(p, p.getLocation().toString()));
+                    Scheduler.runTaskLater(this.plugin, () -> e.getPlayer().damage(9999), 12, p);
                     return;
                 }
-                Location l = e.getTo();
-                if (l.getY() < 0) {
-                    if (l.getWorld().getName().toLowerCase().contains("nether") || l
-                            .getWorld()
-                            .getEnvironment() == Environment.NETHER) { //already on top of the nether..
-                        e.getPlayer().setFlying(false);
-
-                        if (IllegalStack.hasElytra()) {
-                            e.getPlayer().setGliding(false);
-                        }
-
-                        if (e.getPlayer().getGameMode() != GameMode.SURVIVAL) {
-                            e.getPlayer().setGameMode(GameMode.SURVIVAL);
-                        }
-
-                        if (e.getPlayer().isInvulnerable()) {
-                            e.getPlayer().setInvulnerable(false);
-                        }
-
-                        e.setCancelled(true);
-                        getLog().append2(Msg.StaffMsgUnderNether.getValue(e.getPlayer(), e.getPlayer().getLocation().toString()));
-                        Scheduler.runTaskLater(this.plugin, () -> e.getPlayer().damage(9999), 12, e.getPlayer());
-                        return;
-
-                    }
-                }
             }
-        
+        }
 
         if (!Protections.DamagePlayersAboveNether.isEnabled() && Protections.BlockPlayersAboveNether.isEnabled()) {
             if (Protections.ExcludeNetherWorldFromHeightCheck.getTxtSet().contains(e.getTo().getWorld().getName())) {
                 return;
             }
-            
-            Location l = e.getTo();
-            if (l.getY() >= Protections.NetherYLevel.getIntValue()) {
-                if (e.getFrom().getBlockY() >= Protections.NetherYLevel.getIntValue() && (l
-                        .getWorld()
-                        .getName()
-                        .toLowerCase()
-                        .contains("nether") || l
+
+            if (to.getY() >= Protections.NetherYLevel.getIntValue()) {
+                if (e.getFrom().getBlockY() >= Protections.NetherYLevel.getIntValue() && (to
                         .getWorld()
                         .getEnvironment() == Environment.NETHER)) { //already on top of the nether..
-                	
-                	if(e.getPlayer().hasPermission("illegalstack.notify"))
-                		return;
-                	
+
+                    if (e.getPlayer().hasPermission("illegalstack.notify")) {
+                        return;
+                    }
+
                     e.setCancelled(true);
                     if (Protections.EnsureSafeTeleportLocationIfAboveCeiling.isEnabled()) {
-                        int x = e.getFrom().getBlockX();
-                        int z = e.getFrom().getBlockZ();
+                        int x = from.getBlockX();
+                        int z = from.getBlockZ();
                         BlockFace[] faces = new BlockFace[]{BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH, BlockFace.SOUTH};
                         for (int y = Protections.NetherYLevel.getIntValue(); y > (Protections.NetherYLevel.getIntValue() - 17); y--) {
-                            Block b = e.getFrom().getWorld().getBlockAt(x, y, z);
+                            Block b = from.getWorld().getBlockAt(x, y, z);
                             if (b.getType() != Material.BEDROCK) {
                                 b.setType(Material.AIR);
                                 for (BlockFace face : faces) {
@@ -3714,32 +3721,31 @@ public class fListener implements Listener {
                                     b.getRelative(BlockFace.DOWN).setType(Material.NETHERRACK);
                                 }
                                 Location loc = b.getLocation();
-                                getLog().append2(Msg.StaffMsgNetherFix.getValue(e.getPlayer(), loc.toString()));
+                                getLog().append2(Msg.StaffMsgNetherFix.getValue(p, loc.toString()));
                                 e.setCancelled(true);
 
                                 Scheduler.runTaskLater(this.plugin, () -> {
                                     if (Scheduler.FOLIA) {
-                                        e.getPlayer().teleportAsync(loc);
+                                        p.teleportAsync(loc);
                                     } else {
-                                        e.getPlayer().teleport(loc);
+                                        p.teleport(loc);
                                     }
-                                }, 12, e.getPlayer());
+                                }, 12, p);
                                 return;
                             }
                         }
                     } else {
                         if (Scheduler.FOLIA) {
-                            e.getPlayer().teleportAsync(e.getPlayer().getLocation().subtract(0, 3, 0));
+                            p.teleportAsync(p.getLocation().subtract(0, 3, 0));
                         } else {
-                            e.getPlayer().teleport(e.getPlayer().getLocation().subtract(0, 3, 0));
+                            p.teleport(p.getLocation().subtract(0, 3, 0));
                         }
                     }
                     e.setCancelled(true);
-                    getLog().append2(Msg.StaffMsgNetherBlock.getValue(e.getPlayer(), l.toString()));
-                    e.getPlayer().sendMessage(Msg.PlayerNetherBlock.getValue(e.getPlayer().getName()));
+                    getLog().append2(Msg.StaffMsgNetherBlock.getValue(p, to.toString()));
+                    p.sendMessage(Msg.PlayerNetherBlock.getValue(p.getName()));
                 }
             }
-        }
         }
     }
 
@@ -3778,7 +3784,7 @@ public class fListener implements Listener {
             }
         }
 
-        
+
         if (Protections.ResetSpawnersOfType.getTxtSet().isEmpty()) {
             return;
         }
@@ -3852,25 +3858,25 @@ public class fListener implements Listener {
 
     @EventHandler
     public void onEntityTarget(EntityTargetEvent e) {
-    	if(Protections.PreventVexTrapping.isEnabled(e.getEntity().getLocation())) {
-    		if(e.getEntity() instanceof Vex) {
-    			
-    			Vex v = ((Vex)e.getEntity());
-    			if(v.isInsideVehicle()) {
-    				v.getVehicle().removePassenger(e.getEntity());
-    	            getLog().append(Msg.VexEjected.getValue(v.getLocation().toString()), Protections.PreventVexTrapping);
-    			}
-    		}
-    	}
+        if (Protections.PreventVexTrapping.isEnabled(e.getEntity().getLocation())) {
+            if (e.getEntity() instanceof Vex) {
+
+                Vex v = ((Vex) e.getEntity());
+                if (v.isInsideVehicle()) {
+                    v.getVehicle().removePassenger(e.getEntity());
+                    getLog().append(Msg.VexEjected.getValue(v.getLocation().toString()), Protections.PreventVexTrapping);
+                }
+            }
+        }
 
     }
 
     @EventHandler
     public void onItemCraft(CraftItemEvent event) {
-        if (Protections.DisableCraftingRecipes.getTxtSet().isEmpty()){
+        if (Protections.DisableCraftingRecipes.getTxtSet().isEmpty()) {
             return;
         }
-        if (!(event.getWhoClicked() instanceof Player)){
+        if (!(event.getWhoClicked() instanceof Player)) {
             return;
         }
 
@@ -3878,18 +3884,21 @@ public class fListener implements Listener {
         ItemStack craftResult = event.getRecipe().getResult();
         HashSet<String> disabledMaterials = Protections.DisableCraftingRecipes.getTxtSet();
         HashSet<ItemStack> itemStacks = new HashSet<>();
-        for (String s : disabledMaterials){
+        for (String s : disabledMaterials) {
             Material material = Material.getMaterial(s);
-            if (material != null){
+            if (material != null) {
                 ItemStack itemStack = new ItemStack(material);
                 itemStacks.add(itemStack);
             }
         }
 
-        for (ItemStack itemStack : itemStacks){
-            if (craftResult.equals(itemStack)){
+        for (ItemStack itemStack : itemStacks) {
+            if (craftResult.equals(itemStack)) {
                 event.setCancelled(IllegalStackAction.isCompleted(Protections.DisableCraftingRecipes, player));
-                getLog().append(Msg.PreventedItemCraft.getValue(player, craftResult.getType().name()), Protections.DisableCraftingRecipes);
+                getLog().append(
+                        Msg.PreventedItemCraft.getValue(player, craftResult.getType().name()),
+                        Protections.DisableCraftingRecipes
+                );
                 player.sendMessage(Msg.PlayerItemCraftPrevented.getValue(player.getName()));
             }
         }
@@ -3990,11 +3999,13 @@ public class fListener implements Listener {
     public void setIs117(boolean is117) {
         this.is117 = is117;
     }
+
     public void setIs118(boolean is118) {
         this.is118 = is118;
     }
-	public static HashSet<Material> getUnbreakable() {
-		return unbreakable;
-	}
+
+    public static HashSet<Material> getUnbreakable() {
+        return unbreakable;
+    }
 
 }

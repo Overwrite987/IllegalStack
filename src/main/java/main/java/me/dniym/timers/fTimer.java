@@ -643,10 +643,11 @@ public class fTimer implements Runnable {
                                 //NBTStuff.checkForBadCustomData(is, p, false);
                                 BadAttributeCheck.checkForBadCustomData(is, p);
                             }
-                            
-                            if (Protections.PreventInvalidPotions.isEnabled())
-                            	BadPotionCheck.checkPotion(is,p);
-                            
+
+                            if (Protections.PreventInvalidPotions.isEnabled()) {
+                                BadPotionCheck.checkPotion(is, p);
+                            }
+
                         }
                         if (Protections.FixIllegalEnchantmentLevels.isEnabled() && !mcMMOListener.ismcMMOActive(p)) {
                             if (!Protections.OnlyFunctionInWorlds.getTxtSet().isEmpty()) //world list isn't empty

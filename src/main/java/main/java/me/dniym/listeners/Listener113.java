@@ -31,55 +31,46 @@ public class Listener113 implements Listener {
 
     @EventHandler
     public void spawnerSpawnEvent(SpawnerSpawnEvent e) {
-    	
-        if(Protections.SpawnerReset.isEnabled(e.getLocation())) {
-        		
-        	
-        		CreatureSpawner cs = e.getSpawner();
-        		EntityType et = e.getEntityType();
-        		if(et != null && Protections.ResetSpawnersOfTypeOnSpawn.isWhitelisted(et))
-        		{
-        			e.setCancelled(true);
-        			EntityType oldType = cs.getSpawnedType();
-        			cs.setSpawnedType(EntityType.PIG);
-        			cs.setBlockData(cs.getBlockData());
-        			cs.update(true);
-        			fListener.getLog().append(Msg.StaffMsgSpawnerOnSpawnReset.getValue(oldType.name(), e.getLocation()), Protections.ResetSpawnersOfTypeOnSpawn);
-        		} 
-        	}
-        
-        
 
+        if (Protections.SpawnerReset.isEnabled(e.getLocation())) {
+
+            CreatureSpawner cs = e.getSpawner();
+            EntityType et = e.getEntityType();
+            if (Protections.ResetSpawnersOfTypeOnSpawn.isWhitelisted(et)) {
+                e.setCancelled(true);
+                EntityType oldType = cs.getSpawnedType();
+                cs.setSpawnedType(EntityType.PIG);
+                cs.setBlockData(cs.getBlockData());
+                cs.update(true);
+                fListener.getLog().append(
+                        Msg.StaffMsgSpawnerOnSpawnReset.getValue(oldType.name(), e.getLocation()),
+                        Protections.ResetSpawnersOfTypeOnSpawn
+                );
+            }
+        }
     }
-    
+
     @EventHandler
     public void spawnerChangeCheck(PlayerInteractEvent event) {
-        if (Protections.PreventSpawnEggsOnSpawners.isEnabled(event.getPlayer())) {
-
-            Player plr = event.getPlayer();
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+            return;
+        }
+        Player plr = event.getPlayer();
+        if (Protections.PreventSpawnEggsOnSpawners.isEnabled(plr)) {
             ItemStack is = plr.getInventory().getItemInMainHand();
+            if (is.getType().name().toLowerCase().contains("spawn_egg")) {
+                Block blk = event.getClickedBlock();
+                if (blk.getType() == Material.SPAWNER && !event.getPlayer().isOp()) {
+                    plr.sendMessage(Msg.PlayerSpawnEggBlock.getValue());
+                    event.setCancelled(true);
 
-            if (is == null) {
-                is = plr.getInventory().getItemInOffHand();
-            }
-
-            if (is != null && is.getType().name().toLowerCase().contains("spawn_egg")) {
-                if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-
-                    Block blk = event.getClickedBlock();
-                    if (blk.getType() == Material.SPAWNER && !event.getPlayer().isOp()) {
-                        plr.sendMessage(Msg.PlayerSpawnEggBlock.getValue());
-                        event.setCancelled(true);
-
-                    } else if (blk.getType() == Material.SPAWNER) {
-                        fListener.getLog().append(
-                                Msg.StaffMsgChangedSpawnerType.getValue(plr, is.getType().name()),
-                                Protections.PreventSpawnEggsOnSpawners
-                        );
-                    }
-
-
+                } else if (blk.getType() == Material.SPAWNER) {
+                    fListener.getLog().append(
+                            Msg.StaffMsgChangedSpawnerType.getValue(plr, is.getType().name()),
+                            Protections.PreventSpawnEggsOnSpawners
+                    );
                 }
+
             }
         }
     }

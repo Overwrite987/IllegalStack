@@ -51,7 +51,8 @@ import main.java.me.dniym.timers.fTimer;
 import main.java.me.dniym.utils.Scheduler;
 
 public class Listener114 implements Listener {
-	final Logger LOGGER = LogManager.getLogger("IllegalStack/" + Listener114.class.getSimpleName());
+
+    final Logger LOGGER = LogManager.getLogger("IllegalStack/" + Listener114.class.getSimpleName());
     private static final BlockFace[] faces = {BlockFace.EAST, BlockFace.WEST, BlockFace.SOUTH, BlockFace.NORTH};
     HashMap<UUID, Long> lastTrade = new HashMap<>();
     HashSet<Material> consumables = new HashSet<>();
@@ -59,7 +60,7 @@ public class Listener114 implements Listener {
 
     public Listener114(IllegalStack illegalStack) {
         plugin = illegalStack;
-         
+
         Material[] consume = new Material[]{Material.APPLE, Material.BAKED_POTATO, Material.BEETROOT, Material.BEETROOT_SOUP, Material.BREAD, Material.CARROT,
                 Material.CHORUS_FRUIT, Material.COOKED_CHICKEN, Material.COOKED_COD, Material.COOKED_MUTTON, Material.COOKED_PORKCHOP, Material.COOKED_SALMON,
                 Material.COOKED_RABBIT, Material.COOKIE, Material.DRIED_KELP, Material.GOLDEN_APPLE, Material.ENCHANTED_GOLDEN_APPLE, Material.GOLDEN_CARROT,
@@ -85,7 +86,8 @@ public class Listener114 implements Listener {
     @EventHandler
     public void OnVillagerTransform(EntityTransformEvent e) {
 
-        if (Protections.ZombieVillagerTransformChance.getIntValue() < 100 && !Protections.ZombieVillagerTransformChance.isDisabledInWorld(e.getEntity().getWorld())) {
+        if (Protections.ZombieVillagerTransformChance.getIntValue() < 100 && !Protections.ZombieVillagerTransformChance.isDisabledInWorld(
+                e.getEntity().getWorld())) {
             for (Entity ent : e.getTransformedEntities()) {
 
                 if (ent instanceof ZombieVillager) {
@@ -107,7 +109,7 @@ public class Listener114 implements Listener {
 
     @EventHandler
     public void OnVillagerInteract(PlayerInteractEntityEvent e) {
-        
+
         if (Protections.PreventVillagerSwimExploit.isEnabled(e.getPlayer())) {
             if (e.getRightClicked() != null && e.getRightClicked() instanceof Villager && e.getRightClicked() instanceof Merchant) {
                 boolean cancel = false;
@@ -163,7 +165,6 @@ public class Listener114 implements Listener {
     @EventHandler
     public void LockMerchantTrades(InventoryOpenEvent e) {
 
-
         if (Protections.PreventCommandsInBed.isEnabled(e.getPlayer()) && e.getPlayer().isSleeping()) {
             e.setCancelled(true);
             return;
@@ -171,9 +172,8 @@ public class Listener114 implements Listener {
         if (!Protections.VillagerTradeCheesing.isEnabled(e.getPlayer())) {
             return;
         }
-        if (e.getInventory() instanceof MerchantInventory) {
+        if (e.getInventory() instanceof MerchantInventory mi) {
 
-            MerchantInventory mi = (MerchantInventory) e.getInventory();
             if (mi.getHolder() instanceof WanderingTrader) {
                 return;
             }
@@ -240,29 +240,27 @@ public class Listener114 implements Listener {
     public void onPortal(PortalCreateEvent event) {
         if (Protections.PreventBedrockDestruction.isEnabled(event.getWorld())) {
 
-        
-        		for (BlockState b : event.getBlocks()) {
-                	if (fListener.getUnbreakable().contains(b.getType())) {
-                    	//Blocking breaking of unbreakable blocks.
-                    	LOGGER.info("Portal tried to break an unbreakable block: {}", b.getType().name());
-                    	event.setCancelled(true);
-                    	break;
-                	}
-                	if (b.getY() > b.getWorld().getMaxHeight()) {
+            for (BlockState b : event.getBlocks()) {
+                if (fListener.getUnbreakable().contains(b.getType())) {
+                    //Blocking breaking of unbreakable blocks.
+                    LOGGER.info("Portal tried to break an unbreakable block: {}", b.getType().name());
+                    event.setCancelled(true);
+                    break;
+                }
+                if (b.getY() > b.getWorld().getMaxHeight()) {
                     //Blocking portals spawning at world height limit, preventing from https://i.imgur.com/mqAXdpU.png
-                    	event.setCancelled(true);
-                    	break;
-                	}
-            	}
-        	}
-        
-        
+                    event.setCancelled(true);
+                    break;
+                }
+            }
+        }
+
+
     }
-    
+
     @EventHandler
     public void onPearlHit(ProjectileHitEvent e) {
 
-    	
         if (Protections.PreventPearlGlassPhasing.isEnabled(e.getEntity().getLocation())) {
             if (!(e.getEntity() instanceof EnderPearl) || e.getHitBlock() == null || !(e
                     .getEntity()
@@ -308,25 +306,33 @@ public class Listener114 implements Listener {
             final int slot = tSlot;
             final ItemStack food = tFood;
             e.getPlayer().getInventory().setItem(slot, new ItemStack(Material.AIR));
-            Scheduler.runTaskLater(IllegalStack.getPlugin(), () -> e.getPlayer().getInventory().setItem(slot, food), 3, e.getPlayer());
+            Scheduler.runTaskLater(
+                    IllegalStack.getPlugin(),
+                    () -> e.getPlayer().getInventory().setItem(slot, food),
+                    3,
+                    e.getPlayer()
+            );
         }
     }
 
     @EventHandler
     public void onProjectileLaunch(ProjectileLaunchEvent e) {
-    	if(e.getEntity() instanceof FishHook)
-    		return;
+        if (e.getEntity() instanceof FishHook) {
+            return;
+        }
         if (Protections.PreventProjectileExploit2.isEnabled(e.getEntity().getLocation())) {
             fTimer.trackProjectile(e.getEntity());
         }
-        if (Protections.PreventInvalidPotions.isEnabled() && e.getEntity() != null)
-        	e.setCancelled(BadPotionCheck.isInvalidPotion(e.getEntity()));
-        
+        if (Protections.PreventInvalidPotions.isEnabled() && e.getEntity() != null) {
+            e.setCancelled(BadPotionCheck.isInvalidPotion(e.getEntity()));
+        }
+
     }
 
     @EventHandler// (ignoreCancelled = false, priority=EventPriority.LOWEST)
     public void onFallingBlockSpawn(EntitySpawnEvent e) {
-        if (e.getEntity() instanceof Projectile && !(e.getEntity() instanceof FishHook) && Protections.PreventProjectileExploit2.isEnabled(e.getEntity().getLocation())) {
+        if (e.getEntity() instanceof Projectile && !(e.getEntity() instanceof FishHook) && Protections.PreventProjectileExploit2.isEnabled(
+                e.getEntity().getLocation())) {
             fTimer.trackProjectile((Projectile) e.getEntity());
         }
 

@@ -139,7 +139,6 @@ public class Listener114 implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent e) {
 
-
         if (Protections.SilkTouchBookExploit.isEnabled(e.getPlayer())) {
             Player p = e.getPlayer();
             if (p != null && p.getInventory().getItemInMainHand() != null) {
